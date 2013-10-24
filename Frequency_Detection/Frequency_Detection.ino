@@ -88,7 +88,7 @@ void loop(){
   startup = !startup;
  }
  else if (startup == false){
-   Serial.write("ready for the real stuff");
+   Serial.write("ready for the real stuff" );
  }
 }
 
