@@ -17,6 +17,8 @@ boolean clipping = 0;
 //data storage variables
 byte newData = 0;
 byte prevData = 0;
+byte newfreqstor = 1;
+byte prevfreqstor = 1;
 
 //freq variables
 unsigned int timer = 0;//counts period of wave
@@ -68,28 +70,33 @@ ISR(ADC_vect) {//when new ADC value ready
 }
 
 void loop(){ 
- if (startup == true){ 
-    
-   do {
-    // if (clipping){//if currently clipping
-    //   PORTB &= B11011111;//turn off clippng indicator led         ***CLIPPING CODE***  
-    // clipping = 0;}
-    frequency = 38462/period;//timer rate/period  
-    Serial.print(frequency);
-    Serial.println(" hz");
-    delay (100);
-  } 
-  while (frequency < 3600 || frequency > 4000);
+  if (startup == true){ 
 
-  cli(); // disable interupts to properly reset analog register values
-  ADCSRA=0; //reset register value (presumably to stop the constant collection)
-  ADCSRA=0; //reset other register value listed above
-  sei();  //let interrups happen again since they are used in many vital functions
-  startup = !startup;
- }
- else if (startup == false){
-   Serial.write("ready for the real stuff" );
- }
+    do {
+      // if (clipping){//if currently clipping
+      //   PORTB &= B11011111;//turn off clippng indicator led         ***CLIPPING CODE***  
+      // clipping = 0;}
+      frequency = 38462/period;//timer rate/period  
+      Serial.print(frequency);
+      Serial.println(" hz");
+      delay (50);
+      if (frequency < 3600 || frequency > 4000) {
+        newfreqstor = prevfreqstor + 1;
+        prevfreqstor = newfreqstor;
+      }
+    } 
+    while (newfreqstor < 50);
+
+    cli(); // disable interupts to properly reset analog register values
+    ADCSRA=0; //reset register value (presumably to stop the constant collection)
+    ADCSRA=0; //reset other register value listed above
+    sei();  //let interrups happen again since they are used in many vital functions
+    startup = !startup;
+  }
+  else if (startup == false){
+    Serial.write("ready for the real stuff" );
+  }
 }
+
 
 
