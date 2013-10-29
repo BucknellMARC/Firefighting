@@ -1,0 +1,6 @@
+Pins not available
+(assuming motors in 1&2, fan in 4, and servo in S1):
+3,4,6,7,8,10,11,12
+
+Pins therefor available:
+0 (serial input),1 (problems?),2,5,9,13,A0,A1,A2,A3,A4,A5,
