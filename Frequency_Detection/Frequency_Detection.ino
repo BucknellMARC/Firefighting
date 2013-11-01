@@ -26,7 +26,7 @@ unsigned int period;
 int frequency;
 
 void setup(){
-
+  delay(50);
   Serial.begin(9600);
 
   pinMode(13,OUTPUT);//led indicator pin
