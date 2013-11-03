@@ -1,0 +1,45 @@
+ARDUINO 1 (w/o motor shield)
+
+0 - Serial RX
+1 - Serial TX
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+A0
+A1
+A2
+A3
+A4
+A5
+
+ARDUINO 2 (w/ motor shield)
+
+0 - Serial RX
+1 - Serial TX
+2 - Left Motor Encoder A
+3 - Left Motor Encoder B
+4 - Right Motor Encoder A
+5 - Right Motor Encoder B
+6
+7
+8
+9
+10
+11
+12
+13
+A0
+A1
+A2
+A3
+A4
+A5
