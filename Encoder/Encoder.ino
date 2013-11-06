@@ -1,13 +1,13 @@
 //Written by Ward Prescott - 2013 - For Bucknell MARC
-long     steps;
-long     oldsteps;
-long     revolutions;
+long     steps = 0;
+int     revolutions = 0;
 boolean  oldA;
 boolean  oldB;
 boolean  newA;
 boolean  newB;
 int Aoutput = 2;
 int Boutput = 3;
+int button = 7;
 
 void setup(){
   pinMode(Aoutput, INPUT);
@@ -18,27 +18,24 @@ void setup(){
 void loop(){
   newA = digitalRead(Aoutput);
   newB = digitalRead(Boutput);
+  
 
   if (oldA == 0 && newA == 1){
     if (newB == 0){
-      steps = oldsteps + 1;
-      oldsteps = steps;
+      steps++;
     };
     if (newB == 1){
-      steps = oldsteps - 1;
-      oldsteps = steps;
+      steps--;
     };
   };
   
   
   if (oldA == 1 && newA == 0){
     if (newB == 0){
-      steps = oldsteps - 1;
-      oldsteps = steps;
+      steps--;
     };
     if (newB == 1){
-      steps = oldsteps + 1;
-      oldsteps = steps;
+      steps++;
     };
   };
   
@@ -64,6 +61,9 @@ void loop(){
     };
   };
 revolutions = steps / 64;  
+oldA = newA;
+oldB = newB;
+
 }
 
 
