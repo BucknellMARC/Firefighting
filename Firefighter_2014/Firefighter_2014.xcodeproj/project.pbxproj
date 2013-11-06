@@ -6,10 +6,17 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		78B09DD81829BF05000DD0DC /* MotorControl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MotorControl.cpp; sourceTree = "<group>"; };
+		78B09DD91829BF05000DD0DC /* MotorControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MotorControl.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		78B09DCF1829BE96000DD0DC = {
 			isa = PBXGroup;
 			children = (
+				78B09DD81829BF05000DD0DC /* MotorControl.cpp */,
+				78B09DD91829BF05000DD0DC /* MotorControl.h */,
 			);
 			sourceTree = "<group>";
 		};
