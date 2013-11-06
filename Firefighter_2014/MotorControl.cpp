@@ -20,7 +20,7 @@ ENCODER_RIGHT_TWO = 9
 TURN_THRESHOLD = 153
 
 
-MotorControl::MotorControl(int leftForward, int rightForward, int leftReverse, int rightReverse){
+MotorControl::MotorControl(){
     Serial.begin(9600);
     Serial.print("MotorControl initiated");
     motorLeft.run(RELEASE);
