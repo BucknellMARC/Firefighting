@@ -28,13 +28,14 @@ void setup(){
 
 void loop(){
   if(ET.receiveData()){
-    if(mydata.value4 == 400){
-      digitalWrite(10, HIGH);
-            delay(10000);
-    }
+    if(mydata.motorl == 100){
+      digitalWrite(10, 1);
+      }
+    else if (mydata.motorl == 200)
+      {digitalWrite(10, 0);
+      };
     
   };
-  mydata.value4 = 0;
   delay(250);
 }
 

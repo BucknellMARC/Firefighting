@@ -8,6 +8,8 @@
 #include <EasyTransfer.h>
 
 EasyTransfer ET; //Created Object
+int button = 10;
+boolean val = 0;
 
 struct SEND_DATA_STRUCTURE{ //creates data structure, and must be the same on both the TX and RX
   int motorl;
@@ -21,13 +23,22 @@ SEND_DATA_STRUCTURE mydata;
 void setup (){
   Serial.begin(9600);
   ET.begin(details(mydata), &Serial);
+  pinMode(button, INPUT);
 }
 void loop (){
-  mydata.motorl = 10;
+  val = digitalRead(button);
+  if (val == 1){
+    mydata.motorl = 200;
+  }
+  else {
+    mydata.motorl = 100;
+  };
   mydata.motorr = 200;
   mydata.motor3 = 300;
   mydata.value4 = 400;
   ET.sendData();
-  delay(5000);
+  
+  delay(500);
+    
 }
 
