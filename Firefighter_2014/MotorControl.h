@@ -31,7 +31,7 @@ private:
     int ENCODER_LEFT_TWO;
     int ENCODER_RIGHT_ONE;
     int ENCODER_RIGHT_TWO;
-    int TURN_THRESHOLD;
+    int TURN_SCALE;
 };
 
 #endif /* defined(__Firefighter_2014__MotorControl__) */
