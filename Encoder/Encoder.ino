@@ -5,9 +5,9 @@ boolean  oldA;
 boolean  oldB;
 boolean  newA;
 boolean  newB;
-int Aoutput = 3;
-int Boutput = 4;
-int button = 7;
+int Aoutput = 10;
+int Boutput = 11;
+int button = 9;
 boolean state = 0;
 
 void setup(){
