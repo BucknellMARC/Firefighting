@@ -1,12 +1,13 @@
+#include <AFMotor.h>
 #include <MotorControl.h>
 
-MotorControl c;
+MotorControl MC;
 
 void setup(){
- Serial.begin(9600);
+Serial.begin(9600);
 }
 
-void loop(){
-  c.forward(5);
-  c.brake(100000);
+void loop() {
+MC.forward(100);
+delay(5000);
 }
