@@ -17,25 +17,21 @@ class MotorControl{
 public:
     MotorControl();
     void forward();
-    void forward(int distance);
+    void forward(int time);
     void turnLeft();
-    void turnLeft(int distance);
+    void turnLeft(int time);
     void turnRight();
-    void turnRight(int distance);
+    void turnRight(int time);
     void backward();
-    void backward(int distance);
+    void backward(int time);
     void brake();
     void brake(int time);
 private:
-    int ENCODER_LEFT_A;
-    int ENCODER_LEFT_B;
-    int ENCODER_RIGHT_A;
-    int ENCODER_RIGHT_B;
+    int ENCODER_LEFT_ONE;
+    int ENCODER_LEFT_TWO;
+    int ENCODER_RIGHT_ONE;
+    int ENCODER_RIGHT_TWO;
     int TURN_SCALE;
-	bool newA;
-	bool newB;
-	bool oldA;
-	bool oldB;
 };
 
 #endif /* defined(__Firefighter_2014__MotorControl__) */
