@@ -63,11 +63,13 @@ void loop(){
       oldsteps = steps;
     };
   };
-revolutions = steps / 64;
-if (digitalRead(7)==0){
+  oldA = newA;
+  oldB = newB;
+//revolutions = steps / 64;
+//if (digitalRead(7)==0){
   Serial.print(revolutions);
-  delay(500);
-}
+  //delay(500);
+//}
 }
 
 

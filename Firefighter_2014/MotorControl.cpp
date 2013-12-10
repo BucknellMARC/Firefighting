@@ -38,12 +38,12 @@ void MotorControl::forward(int distance){
     forward();
     int revolutions = 0;
     int steps = 0;
+    int oldA;
+    int oldB;
     while (revolutions * TURN_SCALE < distance){
-        bool oldA;
-        bool oldB;
-        bool newA = digitalRead(ENCODER_LEFT_ONE);
-        Serial.print(steps);
-        bool newB = digitalRead(ENCODER_LEFT_TWO);
+        Serial.println(steps);
+        int newA = digitalRead(ENCODER_LEFT_ONE);
+        int newB = digitalRead(ENCODER_LEFT_TWO);
         if (oldA == 0 && newA == 1){
             if (newB == 0){
                 steps++;
@@ -60,7 +60,7 @@ void MotorControl::forward(int distance){
                 steps++;
             };
         };
-        revolutions = steps / 64;
+        revolutions = steps / 64.0;
         oldA = newA;
         oldB = newB;
     };
