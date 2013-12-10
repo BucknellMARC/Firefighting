@@ -13,16 +13,18 @@
 
 AF_DCMotor motorLeft(3);
 AF_DCMotor motorRight(2);
-int ENCODER_LEFT_ONE = 10;
-int ENCODER_LEFT_TWO = 11;
+int ENCODER_LEFT_A = A4;
+int ENCODER_LEFT_B = A5;
 int ENCODER_RIGHT_ONE = 6;
 int ENCODER_RIGHT_TWO = 9;
-int TURN_SCALE = 0.0065283615521376;
+int TURN_SCALE = 151.6569768;
 
 
 MotorControl::MotorControl(){
     Serial.begin(9600);
     Serial.print("MotorControl initiated");
+    pinMode(ENCODER_LEFT_A, INPUT);
+    pinMode(ENCODER_LEFT_B, INPUT);
     motorLeft.setSpeed(255);
     motorRight.setSpeed(255);
     motorLeft.run(RELEASE);
@@ -35,35 +37,67 @@ void MotorControl::forward(){
 }
 
 void MotorControl::forward(int distance){
-    forward();
+    //forward();
     int revolutions = 0;
     int steps = 0;
-    int oldA;
-    int oldB;
-    while (revolutions * TURN_SCALE < distance){
-        Serial.println(steps);
-        int newA = digitalRead(ENCODER_LEFT_ONE);
-        int newB = digitalRead(ENCODER_LEFT_TWO);
+    int oldsteps = 0;
+    bool oldA;
+    bool oldB;
+    bool newA;
+    bool newB;
+    while (true){
+        newA = digitalRead(A4);
+        newB = digitalRead(A5);
+        
         if (oldA == 0 && newA == 1){
             if (newB == 0){
-                steps++;
+                steps = oldsteps + 1;
+                oldsteps = steps;
             };
             if (newB == 1){
-                steps--;
+                steps = oldsteps - 1;
+                oldsteps = steps;
             };
         };
+        
+        
         if (oldA == 1 && newA == 0){
             if (newB == 0){
-                steps--;
+                steps = oldsteps - 1;
+                oldsteps = steps;
             };
             if (newB == 1){
-                steps++;
+                steps = oldsteps + 1;
+                oldsteps = steps;
             };
         };
-        revolutions = steps / 64.0;
+        
+        if (oldB == 0 && newB == 1){
+            if (newA == 0){
+                steps = oldsteps - 1;
+                oldsteps = steps;
+            };
+            if (newA == 1){
+                steps = oldsteps + 1;
+                oldsteps = steps;
+            };
+        };
+        
+        if (oldB == 1 && newB == 0){
+            if (newA == 0){
+                steps = oldsteps + 1;
+                oldsteps = steps;
+            };
+            if (newA == 1){
+                steps = oldsteps - 1;
+                oldsteps = steps;
+            };
+        };
         oldA = newA;
         oldB = newB;
-    };
+        revolutions = steps / 64;
+        Serial.println(revolutions);
+    }
     brake();
 }
 
@@ -76,7 +110,7 @@ void MotorControl::turnLeft(int degree){
     turnLeft();
     int count = 0;
     while (count < TURN_SCALE * degree){
-        if (digitalRead(ENCODER_LEFT_ONE) && digitalRead(ENCODER_LEFT_TWO) &&
+        if (digitalRead(ENCODER_LEFT_A) && digitalRead(ENCODER_LEFT_B) &&
             digitalRead(ENCODER_RIGHT_ONE) && digitalRead(ENCODER_RIGHT_TWO)){
             count++;
         }
@@ -93,7 +127,7 @@ void MotorControl::turnRight(int degree){
     turnRight();
     int count = 0;
     while (count < TURN_SCALE){
-        if (digitalRead(ENCODER_LEFT_ONE) && digitalRead(ENCODER_LEFT_TWO) &&
+        if (digitalRead(ENCODER_LEFT_A) && digitalRead(ENCODER_LEFT_B) &&
             digitalRead(ENCODER_RIGHT_ONE) && digitalRead(ENCODER_RIGHT_TWO)){
             count++;
         }
@@ -120,7 +154,7 @@ void MotorControl::backward(int distance){
     backward();
     int count = 0;
     while (count < TURN_SCALE * distance){
-        if (digitalRead(ENCODER_LEFT_ONE) && digitalRead(ENCODER_LEFT_TWO) &&
+        if (digitalRead(ENCODER_LEFT_A) && digitalRead(ENCODER_LEFT_B) &&
             digitalRead(ENCODER_RIGHT_ONE) && digitalRead(ENCODER_RIGHT_TWO)){
             count++;
         }

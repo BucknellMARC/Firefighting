@@ -1,4 +1,8 @@
 //Written by Ward Prescott - 2013 - For Bucknell MARC
+#include <MotorControl.h>
+
+MotorControl c;
+
 long     steps;
 long     oldsteps;
 long     revolutions;
@@ -6,13 +10,14 @@ boolean  oldA;
 boolean  oldB;
 boolean  newA;
 boolean  newB;
-int Aoutput = 2;
-int Boutput = 3;
+int Aoutput = A4;
+int Boutput = A5;
 
 void setup(){
   pinMode(Aoutput, INPUT);
   pinMode(Boutput, INPUT);
   Serial.begin(9600);
+  
 }
 
 void loop(){
@@ -65,11 +70,11 @@ void loop(){
   };
   oldA = newA;
   oldB = newB;
-//revolutions = steps / 64;
-//if (digitalRead(7)==0){
-  Serial.print(revolutions);
-  //delay(500);
-//}
+revolutions = steps / 64;
+if (digitalRead(6) == 1){
+  Serial.println(revolutions);
+  delay(500);
+}
 }
 
 

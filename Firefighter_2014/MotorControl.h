@@ -27,8 +27,8 @@ public:
     void brake();
     void brake(int time);
 private:
-    int ENCODER_LEFT_ONE;
-    int ENCODER_LEFT_TWO;
+    int ENCODER_LEFT_A;
+    int ENCODER_LEFT_B;
     int ENCODER_RIGHT_ONE;
     int ENCODER_RIGHT_TWO;
     int TURN_SCALE;
