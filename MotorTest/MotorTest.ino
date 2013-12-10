@@ -1,4 +1,5 @@
 #include <AFMotor.h>
+<<<<<<< HEAD
 
 AF_DCMotor motorLeft(3);
 AF_DCMotor motorRight(2);
@@ -93,5 +94,18 @@ void forward(int distance){
 void loop(){
   forward(5);
   brake(1000000000);
+=======
+#include <MotorControl.h>
+
+MotorControl MC;
+
+void setup(){
+Serial.begin(9600);
+}
+
+void loop() {
+MC.forward(100);
+delay(5000);
+>>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
 }
 

@@ -25,16 +25,16 @@ ARDUINO 2 (w/ motor shield)
 
 0 - Serial RX
 1 - Serial TX
-2 - Left Motor Encoder A
-3 - Left Motor Encoder B
-4 - Right Motor Encoder A
-5 - Right Motor Encoder B
-6
+2 
+3
+4
+5
+6 - Right Motor Encoder A
 7
 8
-9
-10
-11
+9 - Right Motor Encoder B
+10 - Left Motor Encoder A
+11 - Left Motor Encoder B
 12
 13
 A0
