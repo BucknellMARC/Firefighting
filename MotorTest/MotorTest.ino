@@ -1,5 +1,5 @@
 #include <AFMotor.h>
-<<<<<<< HEAD
+#include <MotorControl.h>
 
 AF_DCMotor motorLeft(3);
 AF_DCMotor motorRight(2);
@@ -9,27 +9,11 @@ int ENCODER_RIGHT_ONE = 6;
 int ENCODER_RIGHT_TWO = 9;
 int TURN_SCALE = 151.6569768;
 
-
 void setup(){
  Serial.begin(9600);
  motorLeft.setSpeed(255);
  motorRight.setSpeed(255);
  brake();
-}
-
-void brake(){
-  motorLeft.run(RELEASE);
-  motorRight.run(RELEASE);
-}
-
-void brake(int time){
-  brake();
-  delay(time);
-}
-
-void forward(){
-  motorLeft.run(FORWARD);
-  motorRight.run(FORWARD);
 }
 
 void forward(int distance){
@@ -94,18 +78,4 @@ void forward(int distance){
 void loop(){
   forward(5);
   brake(1000000000);
-=======
-#include <MotorControl.h>
-
-MotorControl MC;
-
-void setup(){
-Serial.begin(9600);
 }
-
-void loop() {
-MC.forward(100);
-delay(5000);
->>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
-}
-
