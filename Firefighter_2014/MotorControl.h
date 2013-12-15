@@ -29,13 +29,10 @@ public:
 private:
     int ENCODER_LEFT_A;
     int ENCODER_LEFT_B;
-<<<<<<< HEAD
     int ENCODER_RIGHT_ONE;
     int ENCODER_RIGHT_TWO;
-=======
     int ENCODER_RIGHT_A;
     int ENCODER_RIGHT_B;
->>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
     int TURN_SCALE;
 	bool newA;
 	bool newB;
