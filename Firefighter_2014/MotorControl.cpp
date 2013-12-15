@@ -39,7 +39,7 @@ void MotorControl::forward(int distance){
 	long steps = 0;
     bool newA = 0;
     bool oldA = 0;
-    while (steps < distance){
+    while (steps < (distance - 120)){
         newA = digitalRead(2);
         if (oldA == 0 && newA == 1){
                 steps ++;
