@@ -9,15 +9,12 @@ boolean  oldA;
 boolean  oldB;
 boolean  newA;
 boolean  newB;
-<<<<<<< HEAD
 int Aoutput = A4;
 int Boutput = A5;
-=======
 int Aoutput = 10;
 int Boutput = 11;
 int button = 9;
 boolean state = 0;
->>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
 
 void setup(){
   pinMode(Aoutput, INPUT);
@@ -66,18 +63,16 @@ void loop(){
       steps--;
     };
   };
-<<<<<<< HEAD
+
   oldA = newA;
   oldB = newB;
-=======
-<<<<<<< HEAD
->>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
+
 revolutions = steps / 64;
 if (digitalRead(6) == 1){
   Serial.println(revolutions);
   delay(500);
 }
-=======
+
   oldA = newA;
   oldB = newB;
 
@@ -89,7 +84,7 @@ if (digitalRead(6) == 1){
     delay(300);
   };
 
->>>>>>> 91d99e7e24fa2135290ec816a8814256f3800ab6
+
 }
 
 
