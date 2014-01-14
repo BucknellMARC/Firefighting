@@ -1,25 +1,24 @@
-#include <AFMotor.h>
 #include <MotorControl.h>
+#include <AFMotor.h>
 
 MotorControl MC;
 
 int distance = 2144;
-int steps = 0;
+volatile int steps = 0;
 
 void setup() {
-	Serial.begin(9600);
-	attachInterrupt(2, doEncoder, CHANGE);
+  Serial.begin(9600);
+  attachInterrupt(0, doEncoder, CHANGE);
 }
 
 void doEncoder() {
-	steps ++;
+  steps ++;
 }
 
-void loop(){
-	MC.forward();
-
-	while (steps < (distance)){
-   	};
-  
-    MC.brake(100000);
+void loop() {
+  while (steps < (distance)){
+      MC.forward();
+            };
+  MC.brake(100000);
 }
+
