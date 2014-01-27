@@ -1,5 +1,4 @@
 #include <AFMotor.h>
-<<<<<<< HEAD
 
 AF_DCMotor motorLeft(3);
 AF_DCMotor motorRight(2);
@@ -7,7 +6,7 @@ int ENCODER_LEFT_A = A4;
 int ENCODER_LEFT_B = A5;
 int ENCODER_RIGHT_ONE = 6;
 int ENCODER_RIGHT_TWO = 9;
-int TURN_SCALE = 151.6569768;
+int TURN_SCALE = 1;
 
 
 void setup(){
@@ -34,78 +33,27 @@ void forward(){
 
 void forward(int distance){
   forward();
-  int revolutions = 0;
-  int steps = 0;
+  long revolutions = 0;
+  long steps = 0;
   boolean oldA;
   boolean oldB;
-  boolean newA;
-  boolean newB;
-  while (revolutions < distance){
+  boolean newALeft;
+  boolean newBLeft;
+  while (revolutions * TURN_SCALE < distance){
       newA = digitalRead(ENCODER_LEFT_A);
       newB = digitalRead(ENCODER_LEFT_B);
       if (newA != oldA || newB != oldB){
         steps ++;
       }
-      
-      /*
-      if (oldA == 0 && newA == 1){
-          if (newB == 0){
-              steps += 1;
-          };
-          if (newB == 1){
-              steps -= 1;
-          };
-      };
-        
-        
-      if (oldA == 1 && newA == 0){
-          if (newB == 0){
-              steps -= 1;
-          };
-          if (newB == 1){
-              steps += 1;
-          };
-       };
-        
-       if (oldB == 0 && newB == 1){
-          if (newA == 0){
-              steps -= 1;
-          };
-          if (newA == 1){
-              steps += 1;
-          };
-       };
-        
-       if (oldB == 1 && newB == 0){
-          if (newA == 0){
-              steps += 1;
-          };
-          if (newA == 1){
-              steps -= 1;
-          };
-       };*/
-       oldA = newA;
-       oldB = newB;
-       revolutions = steps / 64;
+      oldA = newA;
+      oldB = newB;
+      revolutions = steps / 64;
     }
     brake();
 }
 
 void loop(){
-  forward(5);
+  forward(800);
   brake(1000000000);
-=======
-#include <MotorControl.h>
-
-MotorControl MC;
-
-void setup(){
-Serial.begin(9600);
-}
-
-void loop() {
-MC.forward(100);
-delay(5000);
->>>>>>> 9aa6aa13a17cf821f68277b31321a223c2bc0e79
 }
 
