@@ -12,10 +12,11 @@ int button = 10;
 boolean val = 0;
 
 struct SEND_DATA_STRUCTURE{ //creates data structure, and must be the same on both the TX and RX
-  int motorl;
-  int motorr;
-  int motor3;
-  int value4;
+  short motorl;
+  short motorr;
+  short motor3;
+  short motor4;
+  short motor5;
 };         
 
 SEND_DATA_STRUCTURE mydata;
@@ -27,18 +28,17 @@ void setup (){
 }
 void loop (){
   val = digitalRead(button);
-  if (val == 1){
-    mydata.motorl = 200;
+  if (val == 1) {
+   mydata.motorl = 100;
   }
   else {
-    mydata.motorl = 100;
-  };
+   mydata.motorl = 200;
+  } 
   mydata.motorr = 200;
   mydata.motor3 = 300;
-  mydata.value4 = 400;
+  mydata.motor4 = 400;
+  mydata.motor5 = 500;
   ET.sendData();
-  
-  delay(500);
     
 }
 

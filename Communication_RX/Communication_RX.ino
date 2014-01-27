@@ -10,10 +10,11 @@
 EasyTransfer ET;
 
 struct RECEIVE_DATA_STRUCTURE{
-  int motorl;
-  int motorr;
-  int motor3;
-  int value4;
+  short motorl;
+  short motorr;
+  short motor3;
+  short motor4;
+  short motor5;
 };
 
 RECEIVE_DATA_STRUCTURE mydata;
@@ -36,8 +37,4 @@ void loop(){
       };
     
   };
-  delay(250);
 }
-
-
-
