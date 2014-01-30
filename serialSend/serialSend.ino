@@ -12,7 +12,7 @@ byte myValue = 0;
 // Communication Values
 //----------------------
 const int DATA_RATE    = 9600;     
-const int DATA_LENGTH  = 4;
+const int DATA_LENGTH  = 6;
 const char DATA_BEGIN  = ':';
 const char DATA_END    = ';';
 char data[DATA_LENGTH + 1];   // One for the string terminator
@@ -36,7 +36,6 @@ void loop()
   else
     myValue = 0;
   sendData();
-  
   /*
   if(myValue < 255)
     myValue += 1;
@@ -44,6 +43,7 @@ void loop()
     myValue = 0;
   sendData();
   */
+  
   delay(10);
 }
 
