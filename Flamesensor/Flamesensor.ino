@@ -7,6 +7,9 @@
  It will loop until it is aligned
  Then it will advance forward some distance, align again, and make sure that it is not over the closeness threshold for distance.
  It will repeat this until it gets to the required closeness.
+ 
+ 
+ TODO: Use getFlameDirection as input for PID control with outputs to motors to center robot on flame?
  */
 
 int sensor1 = A0;
@@ -38,6 +41,7 @@ void loop(){
   readFlameSensor(&sensorArray[0]);
 }
 
+//Populates the input array with values from each of the sensors
 void readFlameSensor(float *valueArray){
 
   valueArray[0] = state1;
