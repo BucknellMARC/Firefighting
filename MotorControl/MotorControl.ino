@@ -36,11 +36,25 @@ void loop(){
      Code should wait for instruction, act, then send return signal. */
   if (ET.receiveData()){
     processData();
+    digitalWrite(13, HIGH);
+    delay(500);
+    digitalWrite(13, LOW);
   }
 }
 
 void processData(){
-  if (
+  int distance = data.dist;
+  if (data.dist){
+    if (data.dir == 'r'){
+      right(distance);
+    } else if (data.dir == 'l'){
+      left(distance);
+    } else if (data.dir == 'f'){
+      forward(distance);
+    } else if (data.dir == 'b'){
+      backward(distance);
+    }
+  }
 }
 
 void forward(double dist){
