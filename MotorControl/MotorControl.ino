@@ -40,7 +40,7 @@ void loop(){
 }
 
 void processData(){
-  
+  if (
 }
 
 void forward(double dist){
