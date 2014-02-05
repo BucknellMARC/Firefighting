@@ -2,8 +2,6 @@
 #include <AFMotor.h>
 
 EasyTransfer ET;
-const int NEAR_DISTANCE = 5;
-
 AF_DCMotor motorLeft(3);
 AF_DCMotor motorRight(1);
 int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
@@ -33,38 +31,16 @@ void setup(){
   motorRight.run(RELEASE);
 }
 
-
-
 void loop(){
-  delay(1000); // Allow MC to catch up with itself
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
-  if (ET.receieve()){
-    processSerialData(data);
+  if (ET.receiveData()){
+    processData();
   }
 }
 
-void processSerialData(String inputString){
-  if (inputString[0] == ':' && inputString[inputString.length() - 1] == ';'){
-    // Processing well formatted string
-    int distance = 0;
-    char buff[3];
-    inputString.substring(2,5).toCharArray(buff, 3);
-    char dir = inputString[1];
-    if (dir == 'f'){
-      forward(distance);
-    } else if (dir == 'b'){
-      backward(distance);
-    } else if (dir == 'l'){
-      left(distance);
-    } else if (dir == 'r'){
-      right(distance);
-    }
-  } else {
-    // Processing ill formatted string
-    // Implement functionality to call for new string from master
-    return;
-  }
+void processData(){
+  
 }
 
 void forward(double dist){
