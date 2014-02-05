@@ -8,7 +8,7 @@ int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
 int ENCODER_RIGHT = 0; // Argument of 0 means encode is connected to pin 2
 long ticksLeft = 0;
 long ticksRight = 0;
-double TICK_MULT_STRAIT = .0285; // Real value is 0.02637581
+double TICK_MULT_STRAIT = .02637581; // Real value is 0.02637581
 double TICK_MULT_TURN = TICK_MULT_STRAIT * 6.0311347;
 
 void setup(){
@@ -17,23 +17,19 @@ void setup(){
   attachInterrupt(ENCODER_RIGHT, countRight, RISING);
   motorLeft.setSpeed(255);
   motorRight.setSpeed(255);
-  //motorLeft.run(RELEASE);
-  //motorRight.run(RELEASE);
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
 }
 
 void loop(){
+  delay(1000); // Allow MC to catch up with itself
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
   
-  forward(100);
-  left(90);
-  forward(50);
+  
   right(180);
-  backward(50);
-  right(90);
-  forward(100);
-  right(270);
-  backward(100);
+  delay(500);
+  left(180);
 
   delay(2000);
 }
@@ -73,6 +69,12 @@ void processSerialData(String inputString){
 }
 
 void forward(double dist){
+  int tickMult = TICK_MULT_STRAIT;
+  if (dist < 50 && dist > 25){
+    tickMult -= .0035;
+  } else if (dist < 25){
+    dist -= 2;
+  }
   do{
     motorLeft.run(FORWARD);
     motorRight.run(FORWARD);
@@ -83,7 +85,6 @@ void forward(double dist){
     motorLeft.run(FORWARD);
     while (ticksRight > ticksLeft){
       motorRight.run(RELEASE);
-      Serial.println(ticksLeft);
     }
     motorRight.run(FORWARD);
     
@@ -102,6 +103,9 @@ void forward(double dist){
 }
 
 void backward(double dist){
+  if (dist < 25){
+    dist -= 2;
+  }
   do{
     motorLeft.run(BACKWARD);
     motorRight.run(BACKWARD);
@@ -115,10 +119,10 @@ void backward(double dist){
     }
     motorRight.run(BACKWARD);
     
-  } while (ticksLeft * TICK_MULT_STRAIT < dist && ticksRight * TICK_MULT_STRAIT < dist);
+  } while (ticksLeft * TICK_MULT_STRAIT < dist || ticksRight * TICK_MULT_STRAIT < dist);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
- 
+  
   motorLeft.run(FORWARD);
   motorRight.run(FORWARD);
   delay(100);
@@ -130,6 +134,11 @@ void backward(double dist){
 }
 
 void left(double deg){
+  if (deg > 30){
+    deg -= 5;
+  } else if (deg > 15){
+    deg -= 3;
+  }
   do{
     motorLeft.run(BACKWARD);
     motorRight.run(FORWARD);
@@ -137,14 +146,7 @@ void left(double deg){
   } while (ticksLeft * TICK_MULT_TURN < deg & ticksRight * TICK_MULT_TURN < deg);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
-  
-  int stopTime = 100;
-  if (deg < 90){
-    stopTime = 50;
-  }
-  if (deg < 30){
-    stopTime = 10;
-  }
+
   motorLeft.run(FORWARD);
   motorRight.run(BACKWARD);
   delay(100);
@@ -156,6 +158,11 @@ void left(double deg){
 }
 
 void right(double deg){
+  if (deg > 30){
+    deg -= 5;
+  } else if (deg > 15){
+    deg -= 3;
+  }
   do{
     motorLeft.run(FORWARD);
     motorRight.run(BACKWARD);
@@ -163,18 +170,10 @@ void right(double deg){
   } while (ticksLeft * TICK_MULT_TURN < deg & ticksRight * TICK_MULT_TURN < deg);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
-  
-  int stopTime = 100;
-  if (deg < 90){
-    stopTime = 50;
-  }
-  if (deg < 30){
-    stopTime = 10;
-  }
-  
+
   motorLeft.run(BACKWARD);
   motorRight.run(FORWARD);
-  delay(deg);
+  delay(100);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
   
