@@ -1,5 +1,7 @@
+#include <EasyTransfer.h>
 #include <AFMotor.h>
 
+EasyTransfer ET;
 const int NEAR_DISTANCE = 5;
 
 AF_DCMotor motorLeft(3);
@@ -11,8 +13,18 @@ long ticksRight = 0;
 double TICK_MULT_STRAIT = .02637581; // Real value is 0.02637581
 double TICK_MULT_TURN = TICK_MULT_STRAIT * 6.0311347;
 
+struct MotorInstruction{
+  char dir;
+  char condition;
+  int dist;
+  char side;
+};
+
+MotorInstruction data;
+
 void setup(){
   Serial.begin(9600);
+  ET.begin(details(data), &Serial);
   attachInterrupt(ENCODER_LEFT, countLeft, RISING);
   attachInterrupt(ENCODER_RIGHT, countRight, RISING);
   motorLeft.setSpeed(255);
@@ -21,27 +33,14 @@ void setup(){
   motorRight.run(RELEASE);
 }
 
+
+
 void loop(){
   delay(1000); // Allow MC to catch up with itself
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
-  
-  
-  right(180);
-  delay(500);
-  left(180);
-
-  delay(2000);
-}
-
-void serialEvent(){
-  String inputString = "";
-  while (Serial.available()) {
-    char inChar = (char)Serial.read();
-    inputString += "";
-    if (inChar == ';'){
-      processSerialData(inputString);
-    }
+  if (ET.receieve()){
+    processSerialData(data);
   }
 }
 
