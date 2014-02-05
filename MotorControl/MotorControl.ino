@@ -91,6 +91,29 @@ void forward(double dist){
   ticksRight = 0;
 }
 
+void align(){
+  left = analogRead(A1);
+  right = analogRead(A2);
+  
+  while( abs(left - right)/((left+right)/2) < .05){
+      
+    if (left < .9*right){   // This will be if it is left in the hall
+      right(30);
+      forward(5);
+      left(10);
+    }         
+    if (right < .9*left){
+      left(30);
+      forward(5);
+      right(30)
+    }
+    left = analogRead(A1);
+    right = analogRead(A2);
+  }
+  
+
+}
+
 void backward(double dist){
   if (dist < 25){
     dist -= 2;
