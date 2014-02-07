@@ -10,10 +10,15 @@ long ticksLeft = 0;
 long ticksRight = 0;
 double TICK_MULT_STRAIT = .02637581; // Real value is 0.02637581
 double TICK_MULT_TURN = TICK_MULT_STRAIT * 6.0311347;
+boolean OPEN = true;
+boolean CLOSED = false;
+int DIST_SENSOR_FRONT = A0;
+int DIST_SENSOR_LEFT = A1;
+int DIST_SENSOR_RIGHT = A2;
 
 struct RECEIVE_DATA_STRUCTURE{
   char dir;
-  char condition;
+  boolean condition;
   int dist;
   char side;
 };
@@ -33,12 +38,10 @@ void setup(){
 }
 
 void loop(){
-  delay(500);
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
   if (ET.receiveData()){
     processData();
-    
   }
 }
 
@@ -58,6 +61,20 @@ void processData(){
       backward(distance);
       done();
     }
+  } else {
+    if (data.dir == 'r'){
+      rightCondition(data.condition, data.side);
+      done();
+    } else if (data.dir == 'l'){
+      leftCondition(data.condition, data.side);
+      done();
+    } else if (data.dir == 'f'){
+      forwardCondition(data.condition, data.side);
+      done();
+    } else if (data.dir == 'b'){
+      backwardCondition(data.condition, data.side);
+      done();
+    }
   }
 }
 
@@ -67,6 +84,46 @@ void done(){
   data.dist = 0;
   data.side = 0;
   ET.sendData();
+}
+
+void forwardCondition(char condition, char side){
+  int distSensor = DIST_SENSOR_FRONT;
+  if (side == 'l'){
+    distSensor = DIST_SENSOR_LEFT;
+  } else if (side == 'r'){
+    distSensor = DIST_SENSOR_RIGHT;
+  }
+  boolean conditionMet = false;
+  while (!conditionMet){
+    motorLeft.run(FORWARD);
+    motorRight.run(FORWARD);
+    
+    while (ticksLeft > ticksRight) {
+      motorLeft.run(RELEASE);
+    }
+    motorLeft.run(FORWARD);
+    while (ticksRight > ticksLeft){
+      motorRight.run(RELEASE);
+    }
+    motorRight.run(FORWARD);
+    
+    if (condition == OPEN){
+      conditionMet = (analogRead(distSensor) > 512);
+    } else {
+      conditionMet = (analogRead(distSensor) <= 512);
+    }
+  }
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  motorLeft.run(BACKWARD);
+  motorRight.run(BACKWARD);
+  delay(100);
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  ticksLeft = 0;
+  ticksRight = 0;
 }
 
 void forward(double dist){
@@ -95,6 +152,46 @@ void forward(double dist){
   
   motorLeft.run(BACKWARD);
   motorRight.run(BACKWARD);
+  delay(100);
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  ticksLeft = 0;
+  ticksRight = 0;
+}
+
+void backwardCondition(char condition, char side){
+  int distSensor = DIST_SENSOR_FRONT;
+  if (side == 'l'){
+    distSensor = DIST_SENSOR_LEFT;
+  } else if (side == 'r'){
+    distSensor = DIST_SENSOR_RIGHT;
+  }
+  boolean conditionMet = false;
+  while (!conditionMet){
+    motorLeft.run(BACKWARD);
+    motorRight.run(BACKWARD);
+    
+    while (ticksLeft > ticksRight) {
+      motorLeft.run(RELEASE);
+    }
+    motorLeft.run(BACKWARD);
+    while (ticksRight > ticksLeft){
+      motorRight.run(RELEASE);
+    }
+    motorRight.run(BACKWARD);
+    
+    if (condition == OPEN){
+      conditionMet = (analogRead(distSensor) > 512);
+    } else {
+      conditionMet = (analogRead(distSensor) <= 512);
+    }
+  }
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  motorLeft.run(FORWARD);
+  motorRight.run(FORWARD);
   delay(100);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
@@ -134,6 +231,47 @@ void backward(double dist){
   ticksRight = 0;
 }
 
+void leftCondition(char condition, char side){
+  int distSensor = DIST_SENSOR_FRONT;
+  if (side == 'l'){
+    distSensor = DIST_SENSOR_LEFT;
+  } else if (side == 'r'){
+    distSensor = DIST_SENSOR_RIGHT;
+  }
+  boolean conditionMet = false;
+  while (!conditionMet){
+    motorLeft.run(BACKWARD);
+    motorRight.run(FORWARD);
+    
+    while (ticksLeft > ticksRight) {
+      motorLeft.run(RELEASE);
+    }
+    motorLeft.run(BACKWARD);
+    while (ticksRight > ticksLeft){
+      motorRight.run(RELEASE);
+    }
+    motorRight.run(FORWARD);
+    
+    if (condition == OPEN){
+      conditionMet = (analogRead(distSensor) > 512);
+    } else {
+      conditionMet = (analogRead(distSensor) <= 512);
+    }
+  }
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  motorLeft.run(FORWARD);
+  motorRight.run(BACKWARD);
+  delay(100);
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  ticksLeft = 0;
+  ticksRight = 0;
+}
+
+
 void left(double deg){
   if (deg > 30){
     deg -= 5;
@@ -154,6 +292,47 @@ void left(double deg){
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
 
+  ticksLeft = 0;
+  ticksRight = 0;
+}
+
+
+void rightCondition(char condition, char side){
+  int distSensor = DIST_SENSOR_FRONT;
+  if (side == 'l'){
+    distSensor = DIST_SENSOR_LEFT;
+  } else if (side == 'r'){
+    distSensor = DIST_SENSOR_RIGHT;
+  }
+  boolean conditionMet = false;
+  while (!conditionMet){
+    motorLeft.run(FORWARD);
+    motorRight.run(BACKWARD);
+    
+    while (ticksLeft > ticksRight) {
+      motorLeft.run(RELEASE);
+    }
+    motorLeft.run(FORWARD);
+    while (ticksRight > ticksLeft){
+      motorRight.run(RELEASE);
+    }
+    motorRight.run(BACKWARD);
+    
+    if (condition == OPEN){
+      conditionMet = (analogRead(distSensor) > 512);
+    } else {
+      conditionMet = (analogRead(distSensor) <= 512);
+    }
+  }
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
+  motorLeft.run(BACKWARD);
+  motorRight.run(FORWARD);
+  delay(100);
+  motorLeft.run(RELEASE);
+  motorRight.run(RELEASE);
+  
   ticksLeft = 0;
   ticksRight = 0;
 }
