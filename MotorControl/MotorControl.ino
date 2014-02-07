@@ -38,7 +38,6 @@ void setup(){
 }
 
 void loop(){
-  delay(300);
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
   if (ET.receiveData()){
