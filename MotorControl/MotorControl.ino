@@ -26,7 +26,7 @@ struct RECEIVE_DATA_STRUCTURE{
 RECEIVE_DATA_STRUCTURE data;
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(13, OUTPUT);
   ET.begin(details(data), &Serial);
   attachInterrupt(ENCODER_LEFT, countLeft, RISING);
@@ -38,6 +38,7 @@ void setup(){
 }
 
 void loop(){
+  delay(300);
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
   if (ET.receiveData()){
@@ -47,39 +48,31 @@ void loop(){
 
 void processData(){
   int distance = data.dist;
-  if (data.dist){
+  if (distance > 0){
     if (data.dir == 'r'){
       right(distance);
-      done();
     } else if (data.dir == 'l'){
       left(distance);
-      done();
     } else if (data.dir == 'f'){
       forward(distance);
-      done();
     } else if (data.dir == 'b'){
       backward(distance);
-      done();
     }
-  } else {
+  } /*else {
     if (data.dir == 'r'){
       rightCondition(data.condition, data.side);
-      done();
     } else if (data.dir == 'l'){
       leftCondition(data.condition, data.side);
-      done();
     } else if (data.dir == 'f'){
       forwardCondition(data.condition, data.side);
-      done();
     } else if (data.dir == 'b'){
       backwardCondition(data.condition, data.side);
-      done();
     }
-  }
+  }*/
 }
 
 void done(){
-  data.dir = 0;
+  data.dir = -1;
   data.condition = 0;
   data.dist = 0;
   data.side = 0;
@@ -124,9 +117,10 @@ void forwardCondition(char condition, char side){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
-void forward(double dist){
+void forward(int dist){
   int tickMult = TICK_MULT_STRAIT;
   if (dist < 50 && dist > 25){
     tickMult -= .0035;
@@ -158,6 +152,7 @@ void forward(double dist){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 void backwardCondition(char condition, char side){
@@ -198,6 +193,7 @@ void backwardCondition(char condition, char side){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 void backward(double dist){
@@ -229,6 +225,7 @@ void backward(double dist){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 void leftCondition(char condition, char side){
@@ -269,6 +266,7 @@ void leftCondition(char condition, char side){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 
@@ -294,6 +292,7 @@ void left(double deg){
 
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 
@@ -335,6 +334,7 @@ void rightCondition(char condition, char side){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 void right(double deg){
@@ -359,6 +359,7 @@ void right(double deg){
   
   ticksLeft = 0;
   ticksRight = 0;
+  done();
 }
 
 void countLeft(){
