@@ -11,17 +11,18 @@ long ticksRight = 0;
 double TICK_MULT_STRAIT = .02637581; // Real value is 0.02637581
 double TICK_MULT_TURN = TICK_MULT_STRAIT * 6.0311347;
 
-struct MotorInstruction{
+struct RECEIVE_DATA_STRUCTURE{
   char dir;
   char condition;
   int dist;
   char side;
 };
 
-MotorInstruction data;
+RECEIVE_DATA_STRUCTURE data;
 
 void setup(){
   Serial.begin(9600);
+  pinMode(13, OUTPUT);
   ET.begin(details(data), &Serial);
   attachInterrupt(ENCODER_LEFT, countLeft, RISING);
   attachInterrupt(ENCODER_RIGHT, countRight, RISING);
@@ -32,13 +33,12 @@ void setup(){
 }
 
 void loop(){
+  delay(500);
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
   if (ET.receiveData()){
     processData();
-    digitalWrite(13, HIGH);
-    delay(500);
-    digitalWrite(13, LOW);
+    
   }
 }
 
@@ -47,14 +47,26 @@ void processData(){
   if (data.dist){
     if (data.dir == 'r'){
       right(distance);
+      done();
     } else if (data.dir == 'l'){
       left(distance);
+      done();
     } else if (data.dir == 'f'){
       forward(distance);
+      done();
     } else if (data.dir == 'b'){
       backward(distance);
+      done();
     }
   }
+}
+
+void done(){
+  data.dir = 0;
+  data.condition = 0;
+  data.dist = 0;
+  data.side = 0;
+  ET.sendData();
 }
 
 void forward(double dist){
@@ -89,29 +101,6 @@ void forward(double dist){
   
   ticksLeft = 0;
   ticksRight = 0;
-}
-
-void align(){
-  left = analogRead(A1);
-  right = analogRead(A2);
-  
-  while( abs(left - right)/((left+right)/2) < .05){
-      
-    if (left < .9*right){   // This will be if it is left in the hall
-      right(30);
-      forward(5);
-      left(10);
-    }         
-    if (right < .9*left){
-      left(30);
-      forward(5);
-      right(30)
-    }
-    left = analogRead(A1);
-    right = analogRead(A2);
-  }
-  
-
 }
 
 void backward(double dist){
