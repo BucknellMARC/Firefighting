@@ -1,8 +1,10 @@
+#include <Average.h>  //used to perform math operations like average on an array, usueful for stabilizing data
 #include <EasyTransfer.h>
 #include <AFMotor.h>
 
+
 EasyTransfer ET;
-AF_DCMotor motorLeft(3);
+AF_DCMotor motorLeft(3); 
 AF_DCMotor motorRight(1);
 int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
 int ENCODER_RIGHT = 0; // Argument of 0 means encode is connected to pin 2
@@ -15,6 +17,12 @@ boolean CLOSED = false;
 int DIST_SENSOR_FRONT = A0;
 int DIST_SENSOR_LEFT = A1;
 int DIST_SENSOR_RIGHT = A2;
+float leftarray[3];
+float rightarray[3];
+float result;
+float leftv;
+float rightv;
+
 
 struct RECEIVE_DATA_STRUCTURE{
   char dir;
@@ -26,7 +34,7 @@ struct RECEIVE_DATA_STRUCTURE{
 RECEIVE_DATA_STRUCTURE data;
 
 void setup(){
-  Serial.begin(115200);
+  Serial.begin(9600);
   pinMode(13, OUTPUT);
   ET.begin(details(data), &Serial);
   attachInterrupt(ENCODER_LEFT, countLeft, RISING);
@@ -40,9 +48,11 @@ void setup(){
 void loop(){
   /* Put in serial code to get move commands here.
      Code should wait for instruction, act, then send return signal. */
-  if (ET.receiveData()){
-    processData();
-  }
+  // if (ET.receiveData()){
+  //   processData();
+  // }
+  align();
+  delay(5000);
 }
 
 void processData(){
@@ -77,6 +87,53 @@ void done(){
   data.side = 0;
   ET.sendData();
 }
+
+void align(){
+    leftv = getleft();
+    rightv = getright();
+
+    while( ((abs(leftv - rightv))/((leftv+rightv)/2)) > .50){
+       
+     if (leftv < .9*rightv){   // This will be if it is left in the hall
+       right(30.0);
+       forward(10);
+       left(30.0);
+     }         
+     if (rightv < .9*leftv){
+       left(30.0);
+       forward(10);
+       right(30.0);
+     }
+    leftv = getleft();
+    rightv = getright();
+   };
+   
+  
+ }
+ 
+float getleft(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
+leftarray[0] = analogRead(DIST_SENSOR_LEFT);
+//rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
+leftarray[1] = analogRead(DIST_SENSOR_LEFT);
+//rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
+leftarray[2] = analogRead(DIST_SENSOR_LEFT);
+//rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
+result = mean(leftarray, 3);
+//result[1] = mean(rightarray, 3);
+return result;
+}
+float getright(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
+//leftarray[0] = analogRead(DIST_SENSOR_LEFT);
+rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
+//leftarray[1] = analogRead(DIST_SENSOR_LEFT);
+rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
+//leftarray[2] = analogRead(DIST_SENSOR_LEFT);
+rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
+//result = mean(leftarray, 3);
+result = mean(rightarray, 3);
+return result;
+}
+
 
 void forwardCondition(char condition, char side){
   int distSensor = DIST_SENSOR_FRONT;
