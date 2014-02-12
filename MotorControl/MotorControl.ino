@@ -17,11 +17,10 @@ boolean CLOSED = false;
 int DIST_SENSOR_FRONT = A0;
 int DIST_SENSOR_LEFT = A1;
 int DIST_SENSOR_RIGHT = A2;
-float leftarray[3];
-float rightarray[3];
-float result;
-float leftv;
-float rightv;
+float leftarray[5];    //Array used to store several values of left distance sensor
+float rightarray[5];   //Array used to store several values of right distance sensor
+float leftIRavg;
+float rightIRavg;
 
 
 struct RECEIVE_DATA_STRUCTURE{
@@ -89,49 +88,48 @@ void done(){
 }
 
 void align(){
-    leftv = getleft();
-    rightv = getright();
-
-    while( ((abs(leftv - rightv))/((leftv+rightv)/2)) > .50){
+    senseLR();
+    
+    while( ((abs(leftIRavg - rightIRavg))/((leftIRavg+rightIRavg)/2)) > .50){
        
-     if (leftv < .9*rightv){   // This will be if it is left in the hall
+     if (leftIRavg < .9*rightIRavg){   // This will be if it is left in the hall
        right(30.0);
+       delay(50);
        forward(10);
+       delay(50);
        left(30.0);
      }         
-     if (rightv < .9*leftv){
+     if (rightIRavg < .9*leftIRavg){
        left(30.0);
+       delay(50);
        forward(10);
+       delay(50);
        right(30.0);
      }
-    leftv = getleft();
-    rightv = getright();
+    senseLR();
    };
    
   
  }
  
-float getleft(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
+void senseLR(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
 leftarray[0] = analogRead(DIST_SENSOR_LEFT);
-//rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
-leftarray[1] = analogRead(DIST_SENSOR_LEFT);
-//rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
-leftarray[2] = analogRead(DIST_SENSOR_LEFT);
-//rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
-result = mean(leftarray, 3);
-//result[1] = mean(rightarray, 3);
-return result;
-}
-float getright(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
-//leftarray[0] = analogRead(DIST_SENSOR_LEFT);
 rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
-//leftarray[1] = analogRead(DIST_SENSOR_LEFT);
+delay(3);
+leftarray[1] = analogRead(DIST_SENSOR_LEFT);
 rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
-//leftarray[2] = analogRead(DIST_SENSOR_LEFT);
+delay(3);
+leftarray[2] = analogRead(DIST_SENSOR_LEFT);
 rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
-//result = mean(leftarray, 3);
-result = mean(rightarray, 3);
-return result;
+delay(3);
+leftarray[3] = analogRead(DIST_SENSOR_LEFT);
+rightarray[3] = analogRead(DIST_SENSOR_RIGHT);
+delay(3);
+leftarray[4] = analogRead(DIST_SENSOR_LEFT);
+rightarray[4] = analogRead(DIST_SENSOR_RIGHT);
+delay(3);
+leftIRavg = mean(leftarray, 5);
+rightIRavg = mean(rightarray, 5);
 }
 
 
