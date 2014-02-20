@@ -21,6 +21,7 @@ float leftarray[5];    //Array used to store several values of left distance sen
 float rightarray[5];   //Array used to store several values of right distance sensor
 float leftIRavg;
 float rightIRavg;
+int MIN_DIST = 220; //Align robot after 25 cm of movement
 
 
 struct RECEIVE_DATA_STRUCTURE{
@@ -45,13 +46,13 @@ void setup(){
 }
 
 void loop(){
-  /* Put in serial code to get move commands here.
-     Code should wait for instruction, act, then send return signal. */
-  // if (ET.receiveData()){
-  //   processData();
-  // }
-  align();
-  delay(5000);
+    
+  if (ET.receiveData()){
+    processData(); // Motors stay dormant until signal recieved, then process and move
+    digitalWrite(13, HIGH);
+    delay(500);
+    digitalWrite(13, LOW);
+  }
 }
 
 void processData(){
@@ -66,7 +67,7 @@ void processData(){
     } else if (data.dir == 'b'){
       backward(distance);
     }
-  } /*else {
+  } else {
     if (data.dir == 'r'){
       rightCondition(data.condition, data.side);
     } else if (data.dir == 'l'){
@@ -76,7 +77,7 @@ void processData(){
     } else if (data.dir == 'b'){
       backwardCondition(data.condition, data.side);
     }
-  }*/
+  }
 }
 
 void done(){
@@ -89,9 +90,7 @@ void done(){
 
 void align(){
     senseLR();
-    
-    while( ((abs(leftIRavg - rightIRavg))/((leftIRavg+rightIRavg)/2)) > .50){
-       
+    while(((abs(leftIRavg - rightIRavg))/((leftIRavg+rightIRavg)/2)) > .50){
      if (leftIRavg < .9*rightIRavg){   // This will be if it is left in the hall
        right(30.0);
        delay(50);
@@ -108,28 +107,26 @@ void align(){
      }
     senseLR();
    };
-   
-  
  }
  
 void senseLR(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
-leftarray[0] = analogRead(DIST_SENSOR_LEFT);
-rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
-delay(3);
-leftarray[1] = analogRead(DIST_SENSOR_LEFT);
-rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
-delay(3);
-leftarray[2] = analogRead(DIST_SENSOR_LEFT);
-rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
-delay(3);
-leftarray[3] = analogRead(DIST_SENSOR_LEFT);
-rightarray[3] = analogRead(DIST_SENSOR_RIGHT);
-delay(3);
-leftarray[4] = analogRead(DIST_SENSOR_LEFT);
-rightarray[4] = analogRead(DIST_SENSOR_RIGHT);
-delay(3);
-leftIRavg = mean(leftarray, 5);
-rightIRavg = mean(rightarray, 5);
+  leftarray[0] = analogRead(DIST_SENSOR_LEFT);
+  rightarray[0] = analogRead(DIST_SENSOR_RIGHT);
+  delay(3);
+  leftarray[1] = analogRead(DIST_SENSOR_LEFT);
+  rightarray[1] = analogRead(DIST_SENSOR_RIGHT);
+  delay(3);
+  leftarray[2] = analogRead(DIST_SENSOR_LEFT);
+  rightarray[2] = analogRead(DIST_SENSOR_RIGHT);
+  delay(3);
+  leftarray[3] = analogRead(DIST_SENSOR_LEFT);
+  rightarray[3] = analogRead(DIST_SENSOR_RIGHT);
+  delay(3);
+  leftarray[4] = analogRead(DIST_SENSOR_LEFT);
+  rightarray[4] = analogRead(DIST_SENSOR_RIGHT);
+  delay(3);
+  leftIRavg = mean(leftarray, 5);
+  rightIRavg = mean(rightarray, 5);
 }
 
 
@@ -155,9 +152,9 @@ void forwardCondition(char condition, char side){
     motorRight.run(FORWARD);
     
     if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) > 512);
+      conditionMet = (analogRead(distSensor) <= MIN_DIST);
     } else {
-      conditionMet = (analogRead(distSensor) <= 512);
+      conditionMet = (analogRead(distSensor) > MIN_DIST);
     }
   }
   motorLeft.run(RELEASE);
@@ -231,9 +228,9 @@ void backwardCondition(char condition, char side){
     motorRight.run(BACKWARD);
     
     if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) > 512);
+      conditionMet = (analogRead(distSensor) > MIN_DIST);
     } else {
-      conditionMet = (analogRead(distSensor) <= 512);
+      conditionMet = (analogRead(distSensor) <= MIN_DIST);
     }
   }
   motorLeft.run(RELEASE);
