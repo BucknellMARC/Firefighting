@@ -4,8 +4,8 @@
 
 
 EasyTransfer ET;
-AF_DCMotor motorLeft(3); 
-AF_DCMotor motorRight(1);
+AF_DCMotor motorLeft(1); 
+AF_DCMotor motorRight(3);
 int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
 int ENCODER_RIGHT = 0; // Argument of 0 means encode is connected to pin 2
 long ticksLeft = 0;
@@ -14,6 +14,8 @@ double TICK_MULT_STRAIT = .02637581; // Real value is 0.02637581
 double TICK_MULT_TURN = TICK_MULT_STRAIT * 6.0311347;
 boolean OPEN = true;
 boolean CLOSED = false;
+boolean ALIGN = true;
+boolean NO_ALIGN = false;
 int DIST_SENSOR_FRONT = A0;
 int DIST_SENSOR_LEFT = A1;
 int DIST_SENSOR_RIGHT = A2;
@@ -21,7 +23,7 @@ float leftarray[5];    //Array used to store several values of left distance sen
 float rightarray[5];   //Array used to store several values of right distance sensor
 float leftIRavg;
 float rightIRavg;
-int MIN_DIST = 220; //Align robot after 25 cm of movement
+int MIN_DIST = 550; //Align robot after 25 cm of movement
 
 
 struct RECEIVE_DATA_STRUCTURE{
@@ -29,6 +31,7 @@ struct RECEIVE_DATA_STRUCTURE{
   boolean condition;
   int dist;
   char side;
+  boolean align;
 };
 
 RECEIVE_DATA_STRUCTURE data;
@@ -48,10 +51,12 @@ void setup(){
 void loop(){
     
   if (ET.receiveData()){
-    processData(); // Motors stay dormant until signal recieved, then process and move
     digitalWrite(13, HIGH);
     delay(500);
     digitalWrite(13, LOW);
+    delay(500);
+    processData(); // Motors stay dormant until signal recieved, then process and move
+    
   }
 }
 
@@ -92,21 +97,17 @@ void align(){
     senseLR();
     while(((abs(leftIRavg - rightIRavg))/((leftIRavg+rightIRavg)/2)) > .50){
      if (leftIRavg < .9*rightIRavg){   // This will be if it is left in the hall
-       right(30.0);
-       delay(50);
-       forward(10);
-       delay(50);
        left(30.0);
-     }         
-     if (rightIRavg < .9*leftIRavg){
-       left(30.0);
-       delay(50);
        forward(10);
-       delay(50);
        right(30.0);
      }
+     if (rightIRavg < .9*leftIRavg){
+       right(30.0);
+       forward(10);
+       left(30.0);
+     }
     senseLR();
-   };
+   }
  }
  
 void senseLR(){ //This function returns an 2 length array with a left and right IR sensor value.  These two values are composed of the average of 10 of their values.
@@ -132,29 +133,48 @@ void senseLR(){ //This function returns an 2 length array with a left and right 
 
 void forwardCondition(char condition, char side){
   int distSensor = DIST_SENSOR_FRONT;
+  int minDist = MIN_DIST;
   if (side == 'l'){
     distSensor = DIST_SENSOR_LEFT;
+    minDist -= 300;
   } else if (side == 'r'){
     distSensor = DIST_SENSOR_RIGHT;
+    minDist -= 300; 
   }
   boolean conditionMet = false;
+  motorLeft.run(FORWARD);
+  motorRight.run(FORWARD);
   while (!conditionMet){
-    motorLeft.run(FORWARD);
-    motorRight.run(FORWARD);
-    
-    while (ticksLeft > ticksRight) {
-      motorLeft.run(RELEASE);
+    if (data.align){
+      senseLR();
+      if (leftIRavg < rightIRavg){   // This will be if it is left in the hall
+        motorRight.run(BACKWARD);
+        delay(20);
+        motorRight.run(FORWARD);
+        delay(50);
+      }
+      if (rightIRavg < leftIRavg){  // This will be if it is right in the hall
+        motorLeft.run(BACKWARD);
+        delay(20);
+        motorLeft.run(FORWARD);
+        delay(50);
+      }
+      senseLR();
+    } else {
+      while (ticksLeft > ticksRight) {
+        motorLeft.run(RELEASE);
+      }
+      motorLeft.run(FORWARD);
+      while (ticksRight > ticksLeft){
+        motorRight.run(RELEASE);
+      }
+      motorRight.run(FORWARD);
     }
-    motorLeft.run(FORWARD);
-    while (ticksRight > ticksLeft){
-      motorRight.run(RELEASE);
-    }
-    motorRight.run(FORWARD);
     
     if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) <= MIN_DIST);
+      conditionMet = (analogRead(distSensor) <= minDist);
     } else {
-      conditionMet = (analogRead(distSensor) > MIN_DIST);
+      conditionMet = (analogRead(distSensor) > minDist);
     }
   }
   motorLeft.run(RELEASE);
@@ -190,7 +210,7 @@ void forward(int dist){
       motorRight.run(RELEASE);
     }
     motorRight.run(FORWARD);
-    
+        
   } while (ticksLeft * TICK_MULT_STRAIT < dist || ticksRight * TICK_MULT_STRAIT < dist);
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
@@ -214,23 +234,33 @@ void backwardCondition(char condition, char side){
     distSensor = DIST_SENSOR_RIGHT;
   }
   boolean conditionMet = false;
+  motorLeft.run(BACKWARD);
+  motorRight.run(BACKWARD);
   while (!conditionMet){
-    motorLeft.run(BACKWARD);
-    motorRight.run(BACKWARD);
-    
-    while (ticksLeft > ticksRight) {
-      motorLeft.run(RELEASE);
-    }
-    motorLeft.run(BACKWARD);
-    while (ticksRight > ticksLeft){
-      motorRight.run(RELEASE);
-    }
-    motorRight.run(BACKWARD);
-    
-    if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) > MIN_DIST);
+    if (data.align){
+      senseLR();
+      if (leftIRavg < rightIRavg){   // This will be if it is left in the hall
+        motorRight.run(FORWARD);
+        delay(20);
+        motorRight.run(BACKWARD);
+        delay(50);
+      }
+      if (rightIRavg < leftIRavg){  // This will be if it is right in the hall
+        motorLeft.run(FORWARD);
+        delay(20);
+        motorLeft.run(BACKWARD);
+        delay(50);
+      }
+      senseLR();
     } else {
-      conditionMet = (analogRead(distSensor) <= MIN_DIST);
+      while (ticksLeft > ticksRight) {
+        motorLeft.run(RELEASE);
+      }
+      motorLeft.run(FORWARD);
+      while (ticksRight > ticksLeft){
+        motorRight.run(RELEASE);
+      }
+      motorRight.run(FORWARD);
     }
   }
   motorLeft.run(RELEASE);
