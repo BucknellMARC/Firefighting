@@ -2,18 +2,18 @@ ARDUINO 1 (w/o motor shield)
 
 0 - Serial RX
 1 - Serial TX
-2 - test
+2 - 
 3
 4
 5
 6
-7
-8
-9
+7 - Start button signal
+8 - Extinguisher Servo
+9 - LED Indicator
 10
 11
 12
-13
+13 - Sound Start Signal
 A0 - Flame Sensor 1
 A1 - Flame Sensor 2
 A2 - Flame Sensor 3
@@ -32,9 +32,9 @@ ARDUINO 2 (w/ motor shield)
 6 
 7
 8
-9 
+9              ###Motor 4 is actually used too, but i don't know which pin it maps to
 10 
-11 - Motor Shield (motor 1)
+11 
 12
 13
 A0 - Front Distance Sensor

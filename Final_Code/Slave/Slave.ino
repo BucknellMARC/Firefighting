@@ -4,7 +4,7 @@
 
 
 EasyTransfer ET;
-AF_DCMotor motorLeft(1); 
+AF_DCMotor motorLeft(4); 
 AF_DCMotor motorRight(3);
 int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
 int ENCODER_RIGHT = 0; // Argument of 0 means encode is connected to pin 2
@@ -58,7 +58,7 @@ void loop(){
     processData(); // Motors stay dormant until signal recieved, then process and move
     
   }
-}
+  }
 
 void processData(){
   int distance = data.dist;
