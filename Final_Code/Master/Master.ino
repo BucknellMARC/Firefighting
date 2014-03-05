@@ -1,6 +1,8 @@
 #include <EasyTransfer.h>
+#include <Servo.h>
 
 EasyTransfer ET; //Created Object
+Servo servo;
 
 boolean OPEN = true;
 boolean CLOSED = false;
@@ -20,12 +22,19 @@ SEND_DATA_STRUCTURE data;
 
 void setup (){
   Serial.begin(9600);
+  pinMode(9, OUTPUT);
   ET.begin(details(data), &Serial);
   pinMode(13, OUTPUT);
+  servo.attach(8);
+  servo.write(0);
 }
 void loop (){
-  drive('f', 0, CLOSED, 'f', ALIGN);
-  delay(2500);
+  while(!digitalRead(7)){
+    delay(1);
+  }
+  drive('r', 0, OPEN, 'r', 0);
+  drive('l', 0, OPEN, 'l', 0);
+  drive('f', 0, CLOSED, 'f', 0);
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align){
