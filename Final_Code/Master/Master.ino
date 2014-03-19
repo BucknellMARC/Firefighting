@@ -3,7 +3,8 @@
 
 EasyTransfer ET; //Created Object
 Servo servo;
-
+int START_BUTTON = 7;
+int LED = 9;
 boolean OPEN = true;
 boolean CLOSED = false;
 
@@ -29,12 +30,11 @@ void setup (){
   servo.write(0);
 }
 void loop (){
-  while(!digitalRead(7)){
+  while(!digitalRead(START_BUTTON)){
     delay(1);
   }
-  drive('r', 0, OPEN, 'r', 0);
-  drive('l', 0, OPEN, 'l', 0);
-  drive('f', 0, CLOSED, 'f', 0);
+  extinguish();
+  
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align){
@@ -44,6 +44,15 @@ void drive(char dir, int dist, boolean condition, char side, boolean align){
   }
 }
 
+void blinkLED(int times){
+  for(int i = 0; i < times; i ++){
+    digitalWrite(LED, HIGH);
+    delay(200);
+    digitalWrite(LED, LOW);
+    delay(200);
+  } 
+}
+
 void driveInterrupt(char dir, int dist, boolean condition, char side, boolean align){
   data.dir = dir;
   data.condition = condition;
@@ -51,6 +60,18 @@ void driveInterrupt(char dir, int dist, boolean condition, char side, boolean al
   data.side = side;
   data.align = align;
   ET.sendData();
+}
+
+void extinguish(){
+  blinkLED(5);
+  boolean flamePresent = true; //Insert sensor information to detect if true here
+  while(flamePresent){
+    servo.write(180);
+    delay(1000);
+    servo.write(0);
+    flamePresent = false; //Insert sensor information to detect if true here
+  }
+  blinkLED(5);
 }
 
 

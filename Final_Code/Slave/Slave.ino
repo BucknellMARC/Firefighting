@@ -24,6 +24,7 @@ float rightarray[5];   //Array used to store several values of right distance se
 float leftIRavg;
 float rightIRavg;
 int MIN_DIST = 550; //Align robot after 25 cm of movement
+int DISTANCE_THRESHOLD = 250;
 
 
 struct RECEIVE_DATA_STRUCTURE{
@@ -320,20 +321,10 @@ void leftCondition(char condition, char side){
   while (!conditionMet){
     motorLeft.run(BACKWARD);
     motorRight.run(FORWARD);
-    
-    while (ticksLeft > ticksRight) {
-      motorLeft.run(RELEASE);
-    }
-    motorLeft.run(BACKWARD);
-    while (ticksRight > ticksLeft){
-      motorRight.run(RELEASE);
-    }
-    motorRight.run(FORWARD);
-    
     if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) > 512);
+      conditionMet = (analogRead(distSensor) > DISTANCE_THRESHOLD);
     } else {
-      conditionMet = (analogRead(distSensor) <= 512);
+      conditionMet = (analogRead(distSensor) <= DISTANCE_THRESHOLD);
     }
   }
   motorLeft.run(RELEASE);
@@ -388,20 +379,10 @@ void rightCondition(char condition, char side){
   while (!conditionMet){
     motorLeft.run(FORWARD);
     motorRight.run(BACKWARD);
-    
-    while (ticksLeft > ticksRight) {
-      motorLeft.run(RELEASE);
-    }
-    motorLeft.run(FORWARD);
-    while (ticksRight > ticksLeft){
-      motorRight.run(RELEASE);
-    }
-    motorRight.run(BACKWARD);
-    
     if (condition == OPEN){
-      conditionMet = (analogRead(distSensor) > 512);
+      conditionMet = (analogRead(distSensor) > DISTANCE_THRESHOLD);
     } else {
-      conditionMet = (analogRead(distSensor) <= 512);
+      conditionMet = (analogRead(distSensor) <= DISTANCE_THRESHOLD);
     }
   }
   motorLeft.run(RELEASE);
