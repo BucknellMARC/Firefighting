@@ -5,8 +5,10 @@ EasyTransfer ET; //Created Object
 Servo servo;
 int START_BUTTON = 7;
 int LED = 9;
-boolean OPEN = true;
-boolean CLOSED = false;
+boolean CLOSED = true;
+boolean OPEN = false;
+boolean FOLLOW = true;
+boolean NO_FOLLOW = false;
 
 boolean ALIGN = true;
 boolean NO_ALIGN = false;
@@ -17,6 +19,7 @@ struct SEND_DATA_STRUCTURE{
   int dist;
   char side;
   boolean align;
+  boolean follow;
 };    
 
 SEND_DATA_STRUCTURE data;
@@ -33,12 +36,12 @@ void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   }
-  extinguish();
-  
+  drive(0, 100, 0, 'r', NO_ALIGN, FOLLOW);
+  blinkLED(3);
 }
 
-void drive(char dir, int dist, boolean condition, char side, boolean align){
-  driveInterrupt(dir, dist, condition, side, align);
+void drive(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
+  driveInterrupt(dir, dist, condition, side, align, follow);
   while (data.dir != -1){
     ET.receiveData();
   }
@@ -53,12 +56,13 @@ void blinkLED(int times){
   } 
 }
 
-void driveInterrupt(char dir, int dist, boolean condition, char side, boolean align){
+void driveInterrupt(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
   data.dir = dir;
   data.condition = condition;
   data.dist = dist;
   data.side = side;
   data.align = align;
+  data.follow = follow;
   ET.sendData();
 }
 
