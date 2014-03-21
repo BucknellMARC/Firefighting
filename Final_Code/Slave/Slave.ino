@@ -27,8 +27,8 @@ float leftIRavg;
 float rightIRavg;
 int MIN_DIST = 550; //Align robot after 25 cm of movement
 int DISTANCE_THRESHOLD = 250;
-int FOLLOW_DISTANCE_THRESHOLD_LOW = 150;
-int FOLLOW_DISTANCE_THRESHOLD_HIGH = 200;
+int FOLLOW_DISTANCE_THRESHOLD_LOW = 175;
+int FOLLOW_DISTANCE_THRESHOLD_HIGH = 250;
 
 
 
@@ -149,50 +149,52 @@ void followWall(char side, int dist){
     rightWheelDirection = FORWARD;
   }
   do {
+    int distance = analogRead(distanceSensor);
     motorLeft.run(FORWARD);
     motorRight.run(FORWARD);
-    while (analogRead(distanceSensor) < FOLLOW_DISTANCE_THRESHOLD_LOW){
+    if (distance < FOLLOW_DISTANCE_THRESHOLD_LOW){
       motorLeft.run(leftWheelDirection);
       motorRight.run(rightWheelDirection);
-      delay(100);
+      delay(50);
       motorLeft.run(FORWARD);
       motorRight.run(FORWARD);
-      delay(200);
+      delay(150);
       motorLeft.run(rightWheelDirection);
       motorRight.run(leftWheelDirection);
-      delay(100);
+      delay(50);
     }
     
-    while (analogRead(distanceSensor) > FOLLOW_DISTANCE_THRESHOLD_HIGH){
+    if (distance > FOLLOW_DISTANCE_THRESHOLD_HIGH){
       motorLeft.run(rightWheelDirection);
       motorRight.run(leftWheelDirection);
-      delay(100);
+      delay(50);
       motorLeft.run(FORWARD);
       motorRight.run(FORWARD);
-      delay(200);
+      delay(100);
       motorLeft.run(leftWheelDirection);
       motorRight.run(rightWheelDirection);
-      delay(100);
+      delay(50);
     }
     
-    
-    if (analogRead(distanceSensor) < 125){
+    if (distance < 75){
       forward(10);
-      if (side == 'l'){
-        left(90);
-      } else {
-        right(90);
-      }
-    }
-    /*
-    if (analogRead(DIST_SENSOR_FRONT) < DISTANCE_THRESHOLD){
-      if (distanceSensor == DIST_SENSOR_LEFT){
-        right(90);
-      } else {
+      if (dir == 'l'){
         left(90);
       }
+      else{
+        right(90);
+      }
+      forward(20);
     }
-    */
+    
+    if (distance < DISTANCE_THRESHOLD){
+      if (dir == 'l'){
+        right(90);
+      } else {
+        left(90);
+      }
+    }
+    
     
   } while (ticksLeft * TICK_MULT_STRAIT < dist || ticksRight * TICK_MULT_STRAIT < dist);
   
