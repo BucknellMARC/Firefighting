@@ -12,6 +12,12 @@ boolean NO_FOLLOW = false;
 
 boolean ALIGN = true;
 boolean NO_ALIGN = false;
+int sensor0;
+int sensor1;
+int sensor2;
+int sensor3;
+int sensor4;
+int THRESHOLD = 75;
 
 struct SEND_DATA_STRUCTURE{
   char dir;
@@ -31,13 +37,18 @@ void setup (){
   pinMode(13, OUTPUT);
   servo.attach(8);
   servo.write(0);
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
+  pinMode(A4, INPUT);
 }
 void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   }
-  drive(0, 100, 0, 'r', NO_ALIGN, FOLLOW);
-  blinkLED(3);
+  search();
+  blinkLED(1);
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
@@ -78,4 +89,54 @@ void extinguish(){
   blinkLED(5);
 }
 
+void search(){
+  delay(750);
+  int checks = 0;
+  while (checks < 4){
+    sensor0 = analogRead(A0);
+    sensor1 = analogRead(A1);
+    sensor2 = analogRead(A2);
+    sensor3 = analogRead(A3);
+    sensor4 = analogRead(A4);
+    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
+      blinkLED(5);
+      return;
+    };
+    checks += 1;
+  };
+
+  drive('l',15,0,0,0,0);
+  checks = 0;
+  delay(500);
+  while (checks < 4){
+    sensor0 = analogRead(A0);
+    sensor1 = analogRead(A1);
+    sensor2 = analogRead(A2);
+    sensor3 = analogRead(A3);
+    sensor4 = analogRead(A4);
+    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
+      blinkLED(5);
+      return;
+
+    };
+    checks += 1;
+  };
+  drive('r',30,0,0,0,0);
+  delay(500);
+  checks = 0;
+  while (checks < 4){
+    sensor0 = analogRead(A0);
+    sensor1 = analogRead(A1);
+    sensor2 = analogRead(A2);
+    sensor3 = analogRead(A3);
+    sensor4 = analogRead(A4);
+    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
+      blinkLED(5);
+      return;
+
+    };
+    checks += 1;
+
+  };
+}
 
