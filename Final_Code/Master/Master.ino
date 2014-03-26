@@ -36,15 +36,37 @@ void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   }
-  drive(0, 100, 0, 'r', NO_ALIGN, FOLLOW);
-  blinkLED(3);
+  drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('r', 90, 0, 0, 0, 0);
+  drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+  /*
+  drive('r', 90, 0, 0, 0, 0);
+  drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+  checkRoom();
+  drive('l', 180, 0, 0, 0, 0);
+  drive('f', 0, CLOSED, 'f', NO_ALIGN, NO_FOLLOW);
+  drive('l', 90, 0, 0, 0, 0);*/
+  blinkLED(5);
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
   driveInterrupt(dir, dist, condition, side, align, follow);
   while (data.dir != -1){
     ET.receiveData();
+    blinkLED(2);
+    delay(500);
   }
+}
+
+void checkRoom(){
+  // INSERT CODE TO CHECK IF THERE IS FLAME IN ROOM
+  /*
+  if (FLAME IN ROOM){
+    MOVE TOWARDS FLAME
+    extinguish();
+    loop();
+  }
+  */
 }
 
 void blinkLED(int times){
