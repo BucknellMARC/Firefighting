@@ -12,12 +12,6 @@ boolean NO_FOLLOW = false;
 
 boolean ALIGN = true;
 boolean NO_ALIGN = false;
-int sensor0;
-int sensor1;
-int sensor2;
-int sensor3;
-int sensor4;
-int THRESHOLD = 75;
 
 struct SEND_DATA_STRUCTURE{
   char dir;
@@ -37,20 +31,20 @@ void setup (){
   pinMode(13, OUTPUT);
   servo.attach(8);
   servo.write(0);
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
-  pinMode(A4, INPUT);
 }
 void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   }
-<<<<<<< HEAD
-  drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
-  drive('r', 90, 0, 0, 0, 0);
-  drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+  driveInterrupt('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+  driveInterrupt('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  driveInterrupt('r', 90, 0, 0, 0, 0);
+  driveInterrupt('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+  driveInterrupt('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+  driveInterrupt('f', 20, 0, 0, 0, 0);
+  driveInterrupt('r', 90, 0, 0, 0, 0);
+  driveInterrupt('f', 20, 0, 0, 0, 0);
+  
   /*
   drive('r', 90, 0, 0, 0, 0);
   drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
@@ -59,18 +53,13 @@ void loop (){
   drive('f', 0, CLOSED, 'f', NO_ALIGN, NO_FOLLOW);
   drive('l', 90, 0, 0, 0, 0);*/
   blinkLED(5);
-=======
-  search();
-  blinkLED(1);
->>>>>>> 9a6fb267c563410f8d1f61ae4a8007ba83580878
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
   driveInterrupt(dir, dist, condition, side, align, follow);
   while (data.dir != -1){
     ET.receiveData();
-    blinkLED(2);
-    delay(500);
+    delay(5);
   }
 }
 
@@ -116,54 +105,4 @@ void extinguish(){
   blinkLED(5);
 }
 
-void search(){
-  delay(750);
-  int checks = 0;
-  while (checks < 4){
-    sensor0 = analogRead(A0);
-    sensor1 = analogRead(A1);
-    sensor2 = analogRead(A2);
-    sensor3 = analogRead(A3);
-    sensor4 = analogRead(A4);
-    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
-    };
-    checks += 1;
-  };
-
-  drive('l',15,0,0,0,0);
-  checks = 0;
-  delay(500);
-  while (checks < 4){
-    sensor0 = analogRead(A0);
-    sensor1 = analogRead(A1);
-    sensor2 = analogRead(A2);
-    sensor3 = analogRead(A3);
-    sensor4 = analogRead(A4);
-    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
-
-    };
-    checks += 1;
-  };
-  drive('r',30,0,0,0,0);
-  delay(500);
-  checks = 0;
-  while (checks < 4){
-    sensor0 = analogRead(A0);
-    sensor1 = analogRead(A1);
-    sensor2 = analogRead(A2);
-    sensor3 = analogRead(A3);
-    sensor4 = analogRead(A4);
-    if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
-
-    };
-    checks += 1;
-
-  };
-}
 
