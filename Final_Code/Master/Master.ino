@@ -26,6 +26,9 @@ struct SEND_DATA_STRUCTURE{
 
 struct RECEIVE_DATA_STRUCTURE{
   boolean done;
+  int front;
+  int left;
+  int right;
 };
 
 SEND_DATA_STRUCTURE dataOut;
@@ -49,23 +52,166 @@ void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   } 
-  driveInterrupt('f', 50, 0, 0, 0, 0); 
-  /*drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+  alignBeginning();
+  firstRoom();
+  secondRoom();
+  thirdRoom();
+  fourthRoom();
+}
+
+void alignBeginning(){
+  drive('r', 0, CLOSED, 'r', NO_ALIGN, NO_FOLLOW);
+}
+
+void firstRoom(){
+  drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+  drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('r', 80, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+  drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+  drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);
+  search();
+  drive('l', 180, 0, 0, 0, 0);
+}
+
+void secondRoom(){
+  drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
   drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
   drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
   drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
   drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
   drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
   drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
-  drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);*/
-  //drive('r', 540, 0, 0, 0, 0);
-  blinkLED(3);
+  drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);
+  search();
+  drive('l', 180, 0, 0, 0, 0);
+}
+
+void thirdRoom(){
+  drive('f', 20, CLOSED, 'f', NO_ALIGN, NO_FOLLOW);
+  if (dataIn.front > 200){   // Wall in lower position
+     drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+     drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+     drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+     drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+     search();
+     drive('f', 0, OPEN, 'l', NO_ALIGN, NO_FOLLOW);
+     drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+     drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+     drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  } else {  // wall in upper position
+    drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);
+    search();
+    drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 0, OPEN, 'l', NO_ALIGN, FOLLOW);
+    drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  }
+}
+
+void fourthRoom(){
+  boolean dogs[3];
+ 
+  drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+  if (dataIn.left > 150){
+    dogs[0] = true;
+  } else {
+    dogs[0] = false;
+  }
+  
+  drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);
+  if(dataIn.front > 150){
+    dogs[1] = true;
+  } else {
+    dogs[0] = false;
+  }
+  
+  if (!dogs[0] && !dogs[1]){
+    dogs[2] = true;
+  } else {
+    dogs[2] = false;
+  }
+  
+  if (!dogs[1]){
+    drive('f', 0, OPEN, 'l', NO_ALIGN, FOLLOW);
+    drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 20, 0, 0, NO_ALIGN, NO_FOLLOW);
+    if (dataIn.left > 150){
+      drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+      search();
+    } else {
+      if (dogs[2]){
+        drive('r', 180, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+        drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+        
+        drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+        drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+        
+        drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+        drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+        search();
+      } else {
+        drive('f', 0, OPEN, 'l', NO_ALIGN, FOLLOW);
+        drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+        
+        drive('f', 0, OPEN, 'l', NO_ALIGN, FOLLOW);
+        drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+        
+        drive('l', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+        drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+        search();
+      }
+    }
+  } else {
+    drive('r', 180, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+    drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+    drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+    drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+    
+    if (dataIn.left > 150){
+      drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+      search();
+    } else {
+      drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+      drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 0, OPEN, 'r', NO_ALIGN, FOLLOW);
+      drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('r', 90, 0, 0, NO_ALIGN, NO_FOLLOW);
+      drive('f', 10, 0, 0, NO_ALIGN, NO_FOLLOW);
+      search();
+    }
+  }
 }
 
 void drive(char dir, int dist, boolean condition, char side, boolean align, boolean follow){
+  dataIn.done = false;
   driveInterrupt(dir, dist, condition, side, align, follow); 
   while (!dataIn.done){
-    ETin.receiveData();  
+    ETin.receiveData(); 
   }
 }
 
@@ -154,6 +300,7 @@ void search(){
     checks += 1;
 
   };
+  drive('l', 15, 0, 0, 0, 0); // Return robot to prior position
 }
 
 
