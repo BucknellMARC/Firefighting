@@ -9,6 +9,7 @@ boolean CLOSED = true;
 boolean OPEN = false;
 boolean FOLLOW = true;
 boolean NO_FOLLOW = false;
+int FLAME_SEARCHES = 4;
 
 boolean ALIGN = true;
 boolean NO_ALIGN = false;
@@ -28,6 +29,14 @@ struct RECEIVE_DATA_STRUCTURE{
   boolean done;
   int front;
   int left;
+  int right;
+};
+
+struct flameSensorArray{
+  int left;
+  int leftCenter;
+  int center;
+  int rightCenter;
   int right;
 };
 
@@ -52,11 +61,21 @@ void loop (){
   while(!digitalRead(START_BUTTON)){
     delay(1);
   } 
-  alignBeginning();
+  /*alignBeginning();
   firstRoom();
   secondRoom();
   thirdRoom();
-  fourthRoom();
+  fourthRoom();*/
+  if (search()){
+    goToFlame();
+  }
+  /*Serial.println(analogRead(A0));
+  Serial.println(analogRead(A1));
+  Serial.println(analogRead(A2));
+  Serial.println(analogRead(A3));
+  Serial.println(analogRead(A4));
+  Serial.println();
+  delay(100);*/
 }
 
 void alignBeginning(){
@@ -246,23 +265,88 @@ void extinguish(){
   blinkLED(5);
 }
 
-void search(){
-  delay(750);
+struct flameSensorArray avgFlameSensors(){
+  struct flameSensorArray sense;
+  
+  for (int i = 0; i < 500; i ++){
+    sense.left += analogRead(A0);
+    sense.leftCenter += analogRead(A1);
+    sense.center += analogRead(A2);
+    sense.rightCenter += analogRead(A3);
+    sense.right += analogRead(A4);
+  }
+  sense.left /= 500;
+  sense.leftCenter /= 500;
+  sense.center /= 500;
+  sense.rightCenter /= 500;
+  sense.right /= 500;
+  return sense;
+}
+
+void goToFlame(){
+  int degreeLong = 45;
+  int degreeShort = 30;
+  int forwardDist = 7;
+  int flameThreshold = 700;
+  int i;
+  
+  struct flameSensorArray sense = avgFlameSensors();
+  
+  drive('f', 15, 0, 0, NO_ALIGN, NO_FOLLOW);
+  while (sense.center < sense.left && sense.center < sense.leftCenter && sense.center < sense.rightCenter 
+          && sense.center < sense.right){
+    drive('r', 30, 0, 0, NO_ALIGN, NO_FOLLOW);
+    sense = avgFlameSensors();
+  }
+  for (i = 0; i < 3; i++){
+    sense = avgFlameSensors();
+    int avg = (sense.left + sense.leftCenter + sense.center + sense.rightCenter + sense.right) / 5;
+    while (avg < flameThreshold){
+      
+      drive('f', forwardDist, 0, 0, NO_ALIGN, NO_FOLLOW);
+      if (sense.left < sense.leftCenter && sense.left < sense.center && sense.left < sense.rightCenter 
+          && sense.left < sense.right){
+        drive('r', degreeLong, 0, 0, NO_ALIGN, NO_FOLLOW);
+      } else if (sense.leftCenter < sense.left && sense.leftCenter < sense.center && sense.leftCenter 
+                  < sense.rightCenter && sense.leftCenter < sense.right){
+        drive('r', degreeShort, 0, 0, NO_ALIGN, NO_FOLLOW);
+      } else if (sense.center < sense.left && sense.center < sense.leftCenter && sense.center < sense.rightCenter 
+          && sense.center < sense.right){
+        
+      } else if (sense.rightCenter < sense.left && sense.rightCenter < sense.leftCenter && sense.rightCenter 
+                  < sense.center && sense.rightCenter < sense.right){
+        drive('l', degreeShort, 0, 0, NO_ALIGN, NO_FOLLOW);
+      } else {
+        drive('l', degreeLong, 0, 0, NO_ALIGN, NO_FOLLOW);
+      }
+      sense = avgFlameSensors();
+      avg = (sense.left + sense.leftCenter + sense.center + sense.rightCenter + sense.right) / 5;
+    }
+    flameThreshold += 75;
+    degreeShort /= 2;
+    degreeLong /= 2;
+    forwardDist /= 2;
+    blinkLED(1);
+  }
+  extinguish();
+}
+
+boolean search(){
+  boolean flame = false;
   int checks = 0;
   int sensor0;
   int sensor1;
   int sensor2;
   int sensor3;
   int sensor4;
-  while (checks < 4){
+  while (checks < FLAME_SEARCHES){
     sensor0 = analogRead(A0);
     sensor1 = analogRead(A1);
     sensor2 = analogRead(A2);
     sensor3 = analogRead(A3);
     sensor4 = analogRead(A4);
     if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
+      flame = true;
     };
     checks += 1;
   };
@@ -270,15 +354,14 @@ void search(){
   drive('l',15,0,0,0,0);
   checks = 0;
   delay(500);
-  while (checks < 4){
+  while (checks < FLAME_SEARCHES){
     sensor0 = analogRead(A0);
     sensor1 = analogRead(A1);
     sensor2 = analogRead(A2);
     sensor3 = analogRead(A3);
     sensor4 = analogRead(A4);
     if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
+      flame = true;
 
     };
     checks += 1;
@@ -286,21 +369,22 @@ void search(){
   drive('r',30,0,0,0,0);
   delay(500);
   checks = 0;
-  while (checks < 4){
+  while (checks < FLAME_SEARCHES){
     sensor0 = analogRead(A0);
     sensor1 = analogRead(A1);
     sensor2 = analogRead(A2);
     sensor3 = analogRead(A3);
     sensor4 = analogRead(A4);
     if(sensor0 > THRESHOLD or sensor1 > THRESHOLD or sensor2 > THRESHOLD or sensor3 > THRESHOLD or sensor4 > THRESHOLD){
-      blinkLED(5);
-      return;
+      flame = true;
 
     };
     checks += 1;
 
   };
+  
   drive('l', 15, 0, 0, 0, 0); // Return robot to prior position
+  return flame;
 }
 
 
