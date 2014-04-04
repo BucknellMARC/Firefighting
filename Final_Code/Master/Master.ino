@@ -49,7 +49,7 @@ void setup (){
   pinMode(9, OUTPUT);
   ETout.begin(details(dataOut), &Serial);
   ETin.begin(details(dataIn), &Serial);
-  pinMode(13, OUTPUT);
+  pinMode(13, INPUT);
   servo.attach(8);
   servo.write(0);
   pinMode(A0, INPUT);
