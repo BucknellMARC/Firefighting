@@ -4,8 +4,8 @@
 
 
 EasyTransfer ETin, ETout;
-AF_DCMotor motorLeft(1); 
-AF_DCMotor motorRight(3);  // Have to use 2 separate bridges, otherwise we'll burn out L293D's easily.
+AF_DCMotor motorLeft(3); 
+AF_DCMotor motorRight(1);  // Have to use 2 separate bridges, otherwise we'll burn out L293D's easily.
 int ENCODER_LEFT = 1;  // Argument of 1 means encoder is connected to pin 3
 int ENCODER_RIGHT = 0; // Argument of 0 means encode is connected to pin 2
 long ticksLeft = 0;
@@ -27,7 +27,7 @@ float leftIRavg;
 float rightIRavg;
 int MIN_DIST = 550; //Align robot after 25 cm of movement
 int DISTANCE_THRESHOLD = 200;
-int FOLLOW_DISTANCE_THRESHOLD_LOW = 175;
+int FOLLOW_DISTANCE_THRESHOLD_LOW = 125;
 int FOLLOW_DISTANCE_THRESHOLD_HIGH = 225;
 
 
@@ -142,55 +142,92 @@ void senseLR(){ //This function returns an 2 length array with a left and right 
   rightIRavg = mean(rightarray, 5);
 }
 
+long avgSensor(int sensor){
+  long sum = 0;
+  for (int i = 0; i < 100; i ++){
+    sum += analogRead(sensor);
+  }
+  return sum / 100;
+}
+
 void followWallUntilOpen(char side){
   int distanceSensor = DIST_SENSOR_RIGHT;
-  int leftWheelDirection = FORWARD;
-  int rightWheelDirection = BACKWARD;
+  int deg = 30;
+  int fDist = 7;
+  //int leftWheelDirection = FORWARD;
+  //int rightWheelDirection = BACKWARD;
   if (side == 'l'){
     distanceSensor = DIST_SENSOR_LEFT;
-    leftWheelDirection = BACKWARD;
-    rightWheelDirection = FORWARD;
+    //leftWheelDirection = BACKWARD;
+    //rightWheelDirection = FORWARD;
   }
   
-  int distance = analogRead(distanceSensor);
-  while (distance > 75) {
-    motorLeft.run(FORWARD);
-    motorRight.run(FORWARD);
-   
-    if (distance < FOLLOW_DISTANCE_THRESHOLD_LOW){
-      motorLeft.run(leftWheelDirection);
-      motorRight.run(rightWheelDirection);
-      delay(50);
+  int distance = avgSensor(distanceSensor);
+  if (distance > 75){
+    do {
       motorLeft.run(FORWARD);
       motorRight.run(FORWARD);
-      delay(100);
-      motorLeft.run(rightWheelDirection);
-      motorRight.run(leftWheelDirection);
-      delay(50);
-    }
-    
-    if (distance > FOLLOW_DISTANCE_THRESHOLD_HIGH){
-      motorLeft.run(rightWheelDirection);
-      motorRight.run(leftWheelDirection);
-      delay(50);
-      motorLeft.run(FORWARD);
-      motorRight.run(FORWARD);
-      delay(100);
-      motorLeft.run(leftWheelDirection);
-      motorRight.run(rightWheelDirection);
-      delay(50);
-    }
-    
-    if (analogRead(DIST_SENSOR_FRONT) > 500){
-      if (side == 'l'){
-        right(90);
-      } else {
-        left(90);
+     
+      if (distance < FOLLOW_DISTANCE_THRESHOLD_LOW){
+        /*motorLeft.run(leftWheelDirection);
+        motorRight.run(rightWheelDirection);
+        delay(50);
+        motorLeft.run(FORWARD);
+        motorRight.run(FORWARD);
+        delay(100);
+        motorLeft.run(rightWheelDirection);
+        motorRight.run(leftWheelDirection);
+        delay(50);*/
+        if (side = 'l'){
+          left(deg);
+          forward(fDist);
+          right(deg/2);
+        } else {
+          right(deg);
+          forward(fDist);
+          left(deg/2);
+        }
+      } 
+      distance = avgSensor(distanceSensor);
+      if (distance < 75)
+        break;
+      
+      if (distance > FOLLOW_DISTANCE_THRESHOLD_HIGH){
+        /*motorLeft.run(rightWheelDirection);
+        motorRight.run(leftWheelDirection);
+        delay(50);
+        motorLeft.run(FORWARD);
+        motorRight.run(FORWARD);
+        delay(100);
+        motorLeft.run(leftWheelDirection);
+        motorRight.run(rightWheelDirection);
+        delay(50);*/
+        if (side = 'r'){
+          left(deg);
+          forward(fDist);
+          right(deg/2);
+        } else {
+          right(deg);
+          forward(fDist);
+          left(deg/2);
+        }
+      } 
+      distance = avgSensor(distanceSensor);
+      if (distance < 75)
+        break;
+      
+      if (analogRead(DIST_SENSOR_FRONT) > 500){
+        if (side == 'l'){
+          right(90);
+        } else {
+          left(90);
+        }
       }
-    }
-    
-    distance = analogRead(distanceSensor);
-  }  
+      
+      distance = avgSensor(distanceSensor);
+    } while (distance > 75);
+  }
+  
   motorLeft.run(RELEASE);
   motorRight.run(RELEASE);
   
@@ -207,12 +244,12 @@ void followWallUntilOpen(char side){
 
 void followWall(char side, int dist){
   int distanceSensor = DIST_SENSOR_RIGHT;
-  int leftWheelDirection = FORWARD;
-  int rightWheelDirection = BACKWARD;
+  //int leftWheelDirection = FORWARD;
+  //int rightWheelDirection = BACKWARD;
   if (side == 'l'){
     distanceSensor = DIST_SENSOR_LEFT;
-    leftWheelDirection = BACKWARD;
-    rightWheelDirection = FORWARD;
+    //leftWheelDirection = BACKWARD;
+    //rightWheelDirection = FORWARD;
   }
   do {
     int distance = analogRead(distanceSensor);
@@ -247,7 +284,7 @@ void followWall(char side, int dist){
     ticksRight = ticksRightTemp;
         
     if (distance < FOLLOW_DISTANCE_THRESHOLD_LOW){
-      motorLeft.run(leftWheelDirection);
+      /*motorLeft.run(leftWheelDirection);
       motorRight.run(rightWheelDirection);
       delay(50);
       motorLeft.run(FORWARD);
@@ -255,11 +292,20 @@ void followWall(char side, int dist){
       delay(100);
       motorLeft.run(rightWheelDirection);
       motorRight.run(leftWheelDirection);
-      delay(50);
+      delay(50);*/
+      if (side = 'l'){
+        left(20);
+        forward(7);
+        right(20);
+      } else {
+        right(20);
+        forward(7);
+        left(20);
+      }
     }
     
     if (distance > FOLLOW_DISTANCE_THRESHOLD_HIGH){
-      motorLeft.run(rightWheelDirection);
+      /*motorLeft.run(rightWheelDirection);
       motorRight.run(leftWheelDirection);
       delay(50);
       motorLeft.run(FORWARD);
@@ -267,7 +313,16 @@ void followWall(char side, int dist){
       delay(100);
       motorLeft.run(leftWheelDirection);
       motorRight.run(rightWheelDirection);
-      delay(50);
+      delay(50);*/
+      if (side = 'r'){
+        left(20);
+        forward(7);
+        right(20);
+      } else {
+        right(20);
+        forward(7);
+        left(20);
+      }
     }
     
   } while (ticksLeft * TICK_MULT_STRAIT < dist || ticksRight * TICK_MULT_STRAIT < dist);
